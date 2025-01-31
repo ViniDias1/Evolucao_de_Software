@@ -39,13 +39,13 @@ def create_db():
         state VARCHAR(20),
         classificacao VARCHAR(20),
         labels TEXT[],
+        comments_count INTEGER,
         created_at TIMESTAMP,
         updated_at TIMESTAMP,
         closed_at TIMESTAMP,
         user_login TEXT,
         assignee TEXT,
         milestone TEXT,
-        repository_url TEXT,
         html_url TEXT
     );
 
@@ -63,8 +63,8 @@ def save_issues_to_db(issues):
 
     insert_query = """
     INSERT INTO github_issues (
-        issue_id, github_id, number, title, body, state, classificacao, labels, created_at, updated_at, closed_at,
-        user_login, assignee, milestone, repository_url, html_url
+        issue_id, github_id, number, title, body, state, classificacao, labels, comments_count, created_at, updated_at, closed_at,
+        user_login, assignee, milestone, html_url
     )
     VALUES %s
     ON CONFLICT (github_id) DO NOTHING
@@ -80,13 +80,13 @@ def save_issues_to_db(issues):
             issue["state"],
             issue["Resultado"],
             [label["name"] for label in issue.get("labels", [])],  # Lista de labels
+            issue["comments"],
             issue["created_at"],
             issue["updated_at"],
             issue.get("closed_at"),  # Algumas issues podem não estar fechadas
             issue["user"]["login"] if "user" in issue else None,  # Pode não ter um usuário associado
             issue.get("assignee", {}).get("login") if issue.get("assignee") else None,  # Pode não ter assign
             issue.get("milestone", {}).get("title") if issue.get("milestone") else None,  # Pode não ter milestone
-            issue["repository_url"],
             issue["html_url"]
         )
         for issue in issues

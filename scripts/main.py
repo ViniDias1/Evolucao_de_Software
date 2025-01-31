@@ -1,3 +1,4 @@
+import random
 import dump
 import modelo
 
@@ -26,9 +27,9 @@ def main():
 
     dump.create_db()
 
-    total_issues = 100
+    total_issues = 200
     per_page = 10
-    page = 50
+    page = 1
     total_issues_count = 0
     #pages = total_issues // per_page
     all_issues = []
@@ -44,7 +45,8 @@ def main():
 
         if total_issues_count >= total_issues:
             break
-        page += 1
+        
+        page -= 10
 
     dump.save_issues_to_db(all_issues)
     print(f"{total_issues_count} issues salvas no banco de dados!")
